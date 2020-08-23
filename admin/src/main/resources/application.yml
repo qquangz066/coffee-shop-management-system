@@ -1,0 +1,17 @@
+spring:
+  profiles:
+    active: local
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: postgres
+
+logging:
+  level:
+    org.springframework.data.jdbc: DEBUG
+    web: DEBUG
+
+flyway:
+  user: ${spring.data.datasource.username}
+  password: ${spring.data.datasource.password}
+  url: ${spring.data.datasource.url}
