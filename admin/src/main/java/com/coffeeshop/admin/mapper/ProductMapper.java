@@ -5,22 +5,26 @@ import com.coffeeshop.admin.request.product.CreateProduct;
 import com.coffeeshop.admin.request.product.UpdateProduct;
 import com.coffeeshop.admin.response.product.ProductDetail;
 import com.coffeeshop.admin.response.product.ProductItem;
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
+import org.mapstruct.*;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface ProductMapper {
-    //entity mapper
     ProductItem toProductItem(Product product);
 
     ProductDetail toProductDetail(Product product);
 
     List<ProductItem> toProductItems(List<Product> product);
 
-    //request mapper
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdDate", ignore = true)
+    @Mapping(target = "modifiedDate", ignore = true)
     Product toProduct(CreateProduct request);
 
-    void updateProduct(UpdateProduct request, @MappingTarget Product product);
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "name", source = "name")
+    @Mapping(target = "description", source = "description")
+    @Mapping(target = "price", source = "price")
+    void updateProduct(@MappingTarget Product product, UpdateProduct request);
 }

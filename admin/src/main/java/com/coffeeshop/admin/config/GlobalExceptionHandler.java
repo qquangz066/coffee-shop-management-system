@@ -17,10 +17,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
@@ -29,11 +26,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleExceptionInternal(
             Exception ex, @Nullable Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
 
-        if (body == null) {
-            return super.handleExceptionInternal(ex, new ApiError(ex.getMessage(), ex.getClass().getSimpleName()),
-                    headers, status, request);
-        }
-        return super.handleExceptionInternal(ex, body, headers, status, request);
+        return super.handleExceptionInternal(ex,
+                Objects.requireNonNullElseGet(body,
+                        () -> new ApiError(ex.getMessage(), ex.getClass().getSimpleName())), headers, status, request);
     }
 
     protected ResponseEntity<Object> handleMethodArgumentNotValid(

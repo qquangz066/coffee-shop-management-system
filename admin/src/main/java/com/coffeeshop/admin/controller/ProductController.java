@@ -8,6 +8,7 @@ import com.coffeeshop.admin.response.CustomPage;
 import com.coffeeshop.admin.response.product.ProductDetail;
 import com.coffeeshop.admin.response.product.ProductItem;
 import com.coffeeshop.admin.service.ProductService;
+import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,29 +22,28 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    @Autowired
-    private ProductMapper productMapper;
+    private static final ProductMapper PRODUCT_MAPPER = Mappers.getMapper(ProductMapper.class);
 
     @GetMapping
     public CustomPage<ProductItem> getAll(@RequestParam(name = "page", defaultValue = "0") int page,
                                           @RequestParam(name = "size", defaultValue = "10") int size) {
         Page<Product> productPage = productService.getAll(PageRequest.of(page, size));
-        return new CustomPage<>(productPage, productMapper.toProductItems(productPage.getContent()));
+        return new CustomPage<>(productPage, PRODUCT_MAPPER.toProductItems(productPage.getContent()));
     }
 
     @GetMapping("/{id}")
     public ProductDetail get(@PathVariable("id") int id) {
-        return productMapper.toProductDetail(productService.get(id));
+        return PRODUCT_MAPPER.toProductDetail(productService.get(id));
     }
 
     @PostMapping
     public ProductDetail create(@RequestBody @Valid CreateProduct request) {
-        return productMapper.toProductDetail(productService.create(request));
+        return PRODUCT_MAPPER.toProductDetail(productService.create(PRODUCT_MAPPER.toProduct(request)));
     }
 
     @PutMapping("/{id}")
     public ProductDetail update(@PathVariable("id") int id, @RequestBody @Valid UpdateProduct request) {
-        return productMapper.toProductDetail(productService.update(id, request));
+        return PRODUCT_MAPPER.toProductDetail(productService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
